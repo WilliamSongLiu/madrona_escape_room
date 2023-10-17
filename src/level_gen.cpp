@@ -17,7 +17,7 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
-    WilliamButtonSpam,
+    WilliamManyButtons,
     NumTypes,
 };
 
@@ -560,7 +560,7 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
 }
 
 // Tons of buttons
-static CountT makeWilliamButtonSpamRoom(Engine &ctx,
+static CountT makeWilliamManyButtonsRoom(Engine &ctx,
                                   Room &room,
                                   float y_min,
                                   float y_max)
@@ -619,9 +619,9 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
-    case RoomType::WilliamButtonSpam: {
+    case RoomType::WilliamManyButtons: {
         num_room_entities =
-            makeWilliamButtonSpamRoom(ctx, room, room_y_min, room_y_max);
+            makeWilliamManyButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
     default: MADRONA_UNREACHABLE();
     }
@@ -638,9 +638,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::WilliamButtonSpam);
-    makeRoom(ctx, level, 1, RoomType::WilliamButtonSpam);
-    makeRoom(ctx, level, 2, RoomType::WilliamButtonSpam);
+    makeRoom(ctx, level, 0, RoomType::WilliamManyButtons);
+    makeRoom(ctx, level, 1, RoomType::WilliamManyButtons);
+    makeRoom(ctx, level, 2, RoomType::WilliamManyButtons);
 
 #if 0
     // An alternative implementation could randomly select the type for each
