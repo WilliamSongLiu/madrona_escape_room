@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
     std::array<std::string, (size_t)SimObject::NumObjects> render_asset_paths;
     render_asset_paths[(size_t)SimObject::Cube] =
-        (std::filesystem::path(DATA_DIR) / "cube_render.obj").string();
+        (std::filesystem::path(DATA_DIR) / "cube_with_hat_render.obj").string();
     render_asset_paths[(size_t)SimObject::Wall] =
         (std::filesystem::path(DATA_DIR) / "wall_render.obj").string();
     render_asset_paths[(size_t)SimObject::Door] =
@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
 
     // Override materials
     render_assets->objects[(CountT)SimObject::Cube].meshes[0].materialIDX = 0;
+    render_assets->objects[(CountT)SimObject::Cube].meshes[1].materialIDX = 0;
     render_assets->objects[(CountT)SimObject::Wall].meshes[0].materialIDX = 1;
     render_assets->objects[(CountT)SimObject::Door].meshes[0].materialIDX = 5;
     render_assets->objects[(CountT)SimObject::Agent].meshes[0].materialIDX = 2;
