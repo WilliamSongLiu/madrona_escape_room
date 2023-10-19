@@ -32,7 +32,7 @@ enum class ExportID : uint32_t {
 // render / physics assets.
 enum class SimObject : uint32_t {
     Cube,
-    ObjectTemplateWithPhysics,
+    OTWP,
     Wall,
     Door,
     Agent,
