@@ -26,8 +26,8 @@ class LearningCallback:
         fps = args.num_worlds * args.steps_per_update / update_time
         self.mean_fps += (fps - self.mean_fps) / update_id
 
-        if update_id != 1 and  update_id % 10 != 0:
-            return
+        # if update_id != 1 and update_id % 10 != 0:
+        #     return
 
         ppo = update_results.ppo_stats
 
@@ -67,8 +67,8 @@ class LearningCallback:
             print(f"    PyTorch Memory Usage: {torch.cuda.memory_reserved() / 1024 / 1024 / 1024:.3f}GB (Reserved), {torch.cuda.max_memory_allocated() / 1024 / 1024 / 1024:.3f}GB (Current)")
             profile.report()
 
-        if update_id % 100 == 0:
-            learning_state.save(update_idx, self.ckpt_dir / f"{update_id}.pth")
+        # if update_id % 100 == 0:
+        learning_state.save(update_idx, self.ckpt_dir / f"{update_id}.pth")
 
 
 arg_parser = argparse.ArgumentParser()
