@@ -17,6 +17,7 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
+    TestOTWP,
     NumTypes,
 };
 
@@ -374,6 +375,34 @@ static Entity makeCube(Engine &ctx,
     return cube;
 }
 
+static Entity makeOTWP(Engine &ctx,
+                       float otwp_x,
+                       float otwp_y,
+                       float scale = 1.f)
+{
+    Entity otwp = ctx.makeEntity<PhysicsEntity>();
+    setupRigidBodyEntity(
+        ctx,
+        otwp,
+        Vector3 {
+            otwp_x,
+            otwp_y,
+            1.f * scale,
+        },
+        Quat { 1, 0, 0, 0 },
+        SimObject::OTWP,
+        EntityType::OTWP,
+        ResponseType::Dynamic,
+        Diag3x3 {
+            scale,
+            scale,
+            scale,
+        });
+    registerRigidBodyEntity(ctx, otwp, SimObject::OTWP);
+
+    return otwp;
+}
+
 static void setupDoor(Engine &ctx,
                       Entity door,
                       Span<const Entity> buttons,
@@ -558,6 +587,29 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
     return 4;
 }
 
+// Test OTWP
+static CountT makeTestOTWPRoom(Engine &ctx,
+                                  Room &room,
+                                  float y_min,
+                                  float y_max)
+{
+    setupDoor(ctx, room.door, {}, false);
+
+    float otwp_a_x = randBetween(ctx,
+        -consts::worldWidth / 4.f,
+        -1.5f);
+
+    float otwp_a_y = randBetween(ctx,
+        y_min + 2.f,
+        y_max - consts::wallWidth - 2.f);
+
+    Entity otwp_a = makeOTWP(ctx, otwp_a_x, otwp_a_y, 1.5f);
+
+    room.entities[0] = otwp_a;
+
+    return 1;
+}
+
 // Make the doors and separator walls at the end of the room
 // before delegating to specific code based on room_type.
 static void makeRoom(Engine &ctx,
@@ -589,6 +641,10 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
+    case RoomType::TestOTWP: {
+        num_room_entities =
+            makeTestOTWPRoom(ctx, room, room_y_min, room_y_max);
+    } break;
     default: MADRONA_UNREACHABLE();
     }
 
@@ -604,9 +660,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::DoubleButton);
-    makeRoom(ctx, level, 1, RoomType::CubeBlocking);
-    makeRoom(ctx, level, 2, RoomType::CubeButtons);
+    makeRoom(ctx, level, 0, RoomType::TestOTWP);
+    makeRoom(ctx, level, 1, RoomType::TestOTWP);
+    makeRoom(ctx, level, 2, RoomType::TestOTWP);
 
 #if 0
     // An alternative implementation could randomly select the type for each
