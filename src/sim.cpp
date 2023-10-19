@@ -306,7 +306,7 @@ inline void appleSystem(Engine &ctx,
 
     bool apple_collected = false;
     RigidBodyPhysicsSystem::findEntitiesWithinAABB(
-            ctx, apple_aabb, [&](Entity e) {
+            ctx, apple_aabb, [&](Entity) {
         apple_collected = true;
     });
 
@@ -436,7 +436,6 @@ inline void collectObservationsSystem(Engine &ctx,
     const LevelState &level = ctx.singleton<LevelState>();
     const Room &room = level.rooms[cur_room_idx];
 
-    int numApplesCollected = 0;
     for (CountT i = 0; i < consts::maxEntitiesPerRoom; i++) {
         Entity entity = room.entities[i];
 
@@ -451,13 +450,6 @@ inline void collectObservationsSystem(Engine &ctx,
             Vector3 to_entity = entity_pos - pos;
             ob.polar = xyToPolar(to_view.rotateVec(to_entity));
             ob.encodedType = encodeType(entity_type);
-
-            if (entity_type == EntityType::Apple) {
-                AppleState apple_state = ctx.get<AppleState>(entity);
-                if (apple_state.isCollected) {
-                    numApplesCollected++;
-                }
-            }
         }
 
         room_ent_obs.obs[i] = ob;

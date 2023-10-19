@@ -17,6 +17,7 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
+    CubeApples,
     NumTypes,
 };
 
@@ -581,6 +582,63 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
     return 4;
 }
 
+// This room has 1 button, 1 cube, and 2 apples. The button needs to remain
+// pressed for the door to stay open.
+static CountT makeCubeAppleRoom(Engine &ctx,
+                                Room &room,
+                                float y_min,
+                                float y_max)
+{
+    float button_x = randBetween(ctx,
+        -consts::worldWidth / 2.f + consts::buttonWidth,
+        consts::worldWidth / 2.f - consts::buttonWidth);
+
+    float button_y = randBetween(ctx,
+        y_min + consts::buttonWidth,
+        y_max - consts::roomLength / 4.f);
+
+    Entity button = makeButton(ctx, button_x, button_y);
+
+    setupDoor(ctx, room.door, { button }, false);
+
+    float cube_x = randBetween(ctx,
+        -consts::worldWidth / 4.f,
+        consts::worldWidth / 4.f);
+
+    float cube_y = randBetween(ctx,
+        y_min + 2.f,
+        y_max - consts::wallWidth - 2.f);
+
+    Entity cube = makeCube(ctx, cube_x, cube_y, 1.5f);
+
+    float apple_a_x = randBetween(ctx,
+        -consts::worldWidth / 4.f,
+        -1.5f);
+
+    float apple_a_y = randBetween(ctx,
+        y_min + 2.f,
+        y_max - consts::wallWidth - 2.f);
+
+    Entity apple_a = makeApple(ctx, apple_a_x, apple_a_y);
+
+    float apple_b_x = randBetween(ctx,
+        1.5f,
+        consts::worldWidth / 4.f);
+
+    float apple_b_y = randBetween(ctx,
+        y_min + 2.f,
+        y_max - consts::wallWidth - 2.f);
+
+    Entity apple_b = makeApple(ctx, apple_b_x, apple_b_y);
+
+    room.entities[0] = button;
+    room.entities[1] = cube;
+    room.entities[2] = apple_a;
+    room.entities[3] = apple_b;
+
+    return 4;
+}
+
 // Make the doors and separator walls at the end of the room
 // before delegating to specific code based on room_type.
 static void makeRoom(Engine &ctx,
@@ -612,6 +670,10 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
+    case RoomType::CubeApples: {
+        num_room_entities =
+            makeCubeAppleRoom(ctx, room, room_y_min, room_y_max);
+    } break;
     default: MADRONA_UNREACHABLE();
     }
 
@@ -627,9 +689,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::CubeButtons);
-    makeRoom(ctx, level, 1, RoomType::CubeButtons);
-    makeRoom(ctx, level, 2, RoomType::CubeButtons);
+    makeRoom(ctx, level, 0, RoomType::CubeApples);
+    makeRoom(ctx, level, 1, RoomType::CubeApples);
+    makeRoom(ctx, level, 2, RoomType::CubeApples);
 
 #if 0
     // An alternative implementation could randomly select the type for each
