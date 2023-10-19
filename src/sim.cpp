@@ -518,28 +518,13 @@ inline void rewardSystem(Engine &,
     out_reward.v = reward;
 }
 
-// Each agent gets a small bonus to it's reward if the other agent has
-// progressed a similar distance, to encourage them to cooperate.
-// This system reads the values of the Progress component written by
-// rewardSystem for other agents, so it must run after.
+// Removed
 inline void bonusRewardSystem(Engine &ctx,
                               OtherAgents &others,
                               Progress &progress,
                               Reward &reward)
 {
-    bool partners_close = true;
-    for (CountT i = 0; i < consts::numAgents - 1; i++) {
-        Entity other = others.e[i];
-        Progress other_progress = ctx.get<Progress>(other);
-
-        if (fabsf(other_progress.maxY - progress.maxY) > 2.f) {
-            partners_close = false;
-        }
-    }
-
-    if (partners_close && reward.v > 0.f) {
-        reward.v *= 1.25f;
-    }
+    return;
 }
 
 // Keep track of the number of steps remaining in the episode and
