@@ -149,6 +149,7 @@ enum class EntityType : uint32_t {
     None,
     Button,
     Cube,
+    ObjectTemplateWithPhysics,
     Wall,
     Agent,
     Door,
