@@ -25,6 +25,7 @@ inline constexpr float worldWidth = 20.f;
 inline constexpr float wallWidth = 1.f;
 inline constexpr float buttonWidth = 1.3f;
 inline constexpr float agentRadius = 1.f;
+inline constexpr float appleRadius = 0.3f;
 inline constexpr float roomLength = worldLength / numRooms;
 
 // Each unit of distance forward (+ y axis) rewards the agents by this amount

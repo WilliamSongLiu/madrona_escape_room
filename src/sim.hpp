@@ -36,8 +36,8 @@ enum class SimObject : uint32_t {
     Door,
     Agent,
     Button,
-    Plane,
     Apple,
+    Plane,
     NumObjects,
 };
 

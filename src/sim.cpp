@@ -293,14 +293,14 @@ inline void appleSystem(Engine &ctx,
     
     AABB apple_aabb {
         .pMin = pos + Vector3 { 
-            -0.5f, 
-            -0.5f,
-            0.f,
+            -consts::appleRadius, 
+            -consts::appleRadius,
+            -consts::appleRadius,
         },
         .pMax = pos + Vector3 { 
-            0.5f, 
-            0.5f,
-            0.5f
+            consts::appleRadius, 
+            consts::appleRadius,
+            consts::appleRadius,
         },
     };
 
