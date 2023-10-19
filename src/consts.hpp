@@ -26,6 +26,8 @@ inline constexpr float roomLength = worldLength / numRooms;
 
 // Each unit of distance forward (+ y axis) rewards the agents by this amount
 inline constexpr float rewardPerDist = 0.05f;
+// Reward for collecting an apple
+inline constexpr float rewardPerApple = 0.1f;
 // Each step that the agents don't make additional progress they get a small
 // penalty reward
 inline constexpr float slackReward = -0.005f;

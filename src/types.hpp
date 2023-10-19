@@ -130,6 +130,7 @@ struct StepsRemaining {
 // reward when more progress has been made
 struct Progress {
     float maxY;
+    int numApples;
 };
 
 // Per-agent component storing Entity IDs of the other agents. Used to
@@ -152,6 +153,7 @@ enum class EntityType : uint32_t {
     Wall,
     Agent,
     Door,
+    Apple,
     NumTypes,
 };
 
@@ -171,6 +173,11 @@ struct DoorProperties {
 // Similar to OpenState, true during frames where a button is pressed
 struct ButtonState {
     bool isPressed;
+};
+
+// True if apple is collected
+struct AppleState {
+    bool isCollected;
 };
 
 // Room itself is not a component but is used by the singleton
@@ -265,6 +272,16 @@ struct ButtonEntity : public madrona::Archetype<
     Scale,
     ObjectID,
     ButtonState,
+    EntityType
+> {};
+
+// Archetype for the apples that agents can collect for reward
+struct AppleEntity : public madrona::Archetype<
+    Position,
+    Rotation,
+    Scale,
+    ObjectID,
+    AppleState,
     EntityType
 > {};
 

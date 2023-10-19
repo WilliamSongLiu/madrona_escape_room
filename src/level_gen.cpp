@@ -224,6 +224,7 @@ static void resetPersistentEntities(Engine &ctx)
          }
 
          ctx.get<Progress>(agent_entity).maxY = pos.y;
+         ctx.get<Progress>(agent_entity).numApples = 0;
 
          ctx.get<Velocity>(agent_entity) = {
              Vector3::zero(),
@@ -372,6 +373,28 @@ static Entity makeCube(Engine &ctx,
     registerRigidBodyEntity(ctx, cube, SimObject::Cube);
 
     return cube;
+}
+
+static Entity makeApple(Engine &ctx,
+                        float apple_x,
+                        float apple_y)
+{
+    Entity apple = ctx.makeEntity<AppleEntity>();
+    ctx.get<Position>(apple) = Vector3 {
+        apple_x,
+        apple_y,
+        0.f,
+    };
+    ctx.get<Rotation>(apple) = Quat { 1, 0, 0, 0 };
+    ctx.get<Scale>(apple) = Diag3x3 {
+        1.f,
+        1.f,
+        1.f,
+    };
+    ctx.get<ObjectID>(apple) = ObjectID { (int32_t)SimObject::Apple };
+    ctx.get<EntityType>(apple) = EntityType::Apple;
+
+    return apple;
 }
 
 static void setupDoor(Engine &ctx,

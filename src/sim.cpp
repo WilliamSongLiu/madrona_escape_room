@@ -404,6 +404,7 @@ inline void collectObservationsSystem(Engine &ctx,
     const LevelState &level = ctx.singleton<LevelState>();
     const Room &room = level.rooms[cur_room_idx];
 
+    int numApplesCollected = 0;
     for (CountT i = 0; i < consts::maxEntitiesPerRoom; i++) {
         Entity entity = room.entities[i];
 
@@ -418,6 +419,13 @@ inline void collectObservationsSystem(Engine &ctx,
             Vector3 to_entity = entity_pos - pos;
             ob.polar = xyToPolar(to_view.rotateVec(to_entity));
             ob.encodedType = encodeType(entity_type);
+
+            if (entity_type == EntityType::Apple) {
+                AppleState apple_state = ctx.get<AppleState>(entity);
+                if (apple_state.isCollected) {
+                    numApplesCollected++;
+                }
+            }
         }
 
         room_ent_obs.obs[i] = ob;
@@ -500,18 +508,28 @@ inline void rewardSystem(Engine &,
                          Progress &progress,
                          Reward &out_reward)
 {
-    // Just in case agents do something crazy, clamp total reward
-    float reward_pos = fminf(pos.y, consts::worldLength * 2);
-
-    float old_max_y = progress.maxY;
-
-    float new_progress = reward_pos - old_max_y;
-
     float reward;
-    if (new_progress > 0) {
-        reward = new_progress * consts::rewardPerDist;
-        progress.maxY = reward_pos;
-    } else {
+
+    // Reward for new max y
+    // Just in case agents do something crazy, clamp total reward
+    float new_y = fminf(pos.y, consts::worldLength * 2);
+    float old_max_y = progress.maxY;
+    float y_progress = new_y - old_max_y;
+    if (y_progress > 0) {
+        reward = y_progress * consts::rewardPerDist;
+        progress.maxY = new_y;
+    }
+
+    // Reward for collecting an apple
+    int new_num_apples;
+    int old_num_apples = progress.numApples;
+    float apple_progress = new_num_apples - old_num_apples;
+    if (apple_progress > 0) {
+        reward += apple_progress * consts::rewardPerApple;
+        progress.numApples = new_num_apples;
+    }
+
+    if (reward == 0) {
         reward = consts::slackReward;
     }
 
