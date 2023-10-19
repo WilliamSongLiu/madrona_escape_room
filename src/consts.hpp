@@ -12,6 +12,9 @@ inline constexpr madrona::CountT numRooms = 3;
 // Generated levels assume 2 agents
 inline constexpr madrona::CountT numAgents = 2;
 
+// Generated levels assume 2 apples
+inline constexpr madrona::CountT numApples = 2;
+
 // Maximum number of interactive objects per challenge room. This is needed
 // in order to setup the fixed-size learning tensors appropriately.
 inline constexpr madrona::CountT maxEntitiesPerRoom = 6;

@@ -139,6 +139,11 @@ struct OtherAgents {
     madrona::Entity e[consts::numAgents - 1];
 };
 
+// Stores Entity IDs of apples
+struct Apples {
+    madrona::Entity e[consts::numApples];
+};
+
 // Tracks if an agent is currently grabbing another entity
 struct GrabState {
     Entity constraintEntity;

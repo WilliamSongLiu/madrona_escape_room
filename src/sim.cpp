@@ -281,6 +281,38 @@ inline void buttonSystem(Engine &ctx,
     state.isPressed = button_pressed;
 }
 
+// Checks if there is an entity standing on the apple and updates
+// AppleState if so.
+inline void appleSystem(Engine &ctx,
+                        Position pos,
+                        AppleState &state)
+{
+    if (state.isCollected) {
+        return;
+    }
+    
+    AABB apple_aabb {
+        .pMin = pos + Vector3 { 
+            -0.5f, 
+            -0.5f,
+            0.f,
+        },
+        .pMax = pos + Vector3 { 
+            0.5f, 
+            0.5f,
+            0.5f
+        },
+    };
+
+    bool apple_collected = false;
+    RigidBodyPhysicsSystem::findEntitiesWithinAABB(
+            ctx, apple_aabb, [&](Entity e) {
+        apple_collected = true;
+    });
+
+    state.isCollected = apple_collected;
+}
+
 // Check if all the buttons linked to the door are pressed and open if so.
 // Optionally, close the door if the buttons aren't pressed.
 inline void doorOpenSystem(Engine &ctx,
@@ -503,12 +535,13 @@ inline void lidarSystem(Engine &ctx,
 // Computes reward for each agent and keeps track of the max distance achieved
 // so far through the challenge. Continuous reward is provided for any new
 // distance achieved.
-inline void rewardSystem(Engine &,
+inline void rewardSystem(Engine &ctx,
                          Position pos,
+                         Apples &apples,
                          Progress &progress,
                          Reward &out_reward)
 {
-    float reward;
+    float reward = 0;
 
     // Reward for new max y
     // Just in case agents do something crazy, clamp total reward
@@ -521,7 +554,14 @@ inline void rewardSystem(Engine &,
     }
 
     // Reward for collecting an apple
-    int new_num_apples;
+    int new_num_apples = 0;
+    for (CountT i = 0; i < consts::numApples; i++) {
+        Entity apple = apples.e[i];
+        AppleState apple_state = ctx.get<AppleState>(apple);
+        if (apple_state.isCollected) {
+            new_num_apples++;
+        }
+    }
     int old_num_apples = progress.numApples;
     float apple_progress = new_num_apples - old_num_apples;
     if (apple_progress > 0) {
@@ -650,18 +690,26 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
             Position,
             ButtonState
         >>({phys_done});
+    
+    // Check apples
+    auto apple_sys = builder.addToGraph<ParallelForNode<Engine,
+        appleSystem,
+            Position,
+            AppleState
+        >>({button_sys});
 
     // Set door to start opening if button conditions are met
     auto door_open_sys = builder.addToGraph<ParallelForNode<Engine,
         doorOpenSystem,
             OpenState,
             DoorProperties
-        >>({button_sys});
+        >>({apple_sys});
 
     // Compute initial reward now that physics has updated the world state
     auto reward_sys = builder.addToGraph<ParallelForNode<Engine,
          rewardSystem,
             Position,
+            Apples,
             Progress,
             Reward
         >>({door_open_sys});
