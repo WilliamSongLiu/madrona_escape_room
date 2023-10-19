@@ -17,7 +17,6 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
-    ManyButtons,
     NumTypes,
 };
 
@@ -559,35 +558,6 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
     return 4;
 }
 
-// Tons of buttons
-static CountT makeManyButtonsRoom(Engine &ctx,
-                                  Room &room,
-                                  float y_min,
-                                  float y_max)
-{
-    std::vector<Entity> buttons;
-    for (int i = 0; i < 5; i++) {
-        float button_x = randBetween(ctx,
-            -consts::worldWidth / 2.f + consts::buttonWidth,
-            consts::worldWidth / 2.f - consts::buttonWidth);
-
-        float button_y = randBetween(ctx,
-            y_min + consts::buttonWidth,
-            y_max - consts::roomLength / 4.f);
-
-        Entity button = makeButton(ctx, button_x, button_y);
-        buttons.push_back(button);
-    }
-
-    setupDoor(ctx, room.door, buttons, false);
-
-    for (int i = 0; i < 6; i++) {
-        room.entities[i] = buttons[i];
-    }
-
-    return 6;
-}
-
 // Make the doors and separator walls at the end of the room
 // before delegating to specific code based on room_type.
 static void makeRoom(Engine &ctx,
@@ -619,10 +589,6 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
-    case RoomType::ManyButtons: {
-        num_room_entities =
-            makeManyButtonsRoom(ctx, room, room_y_min, room_y_max);
-    } break;
     default: MADRONA_UNREACHABLE();
     }
 
@@ -638,9 +604,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::SingleButton);
-    makeRoom(ctx, level, 1, RoomType::DoubleButton);
-    makeRoom(ctx, level, 2, RoomType::ManyButtons);
+    makeRoom(ctx, level, 0, RoomType::CubeButtons);
+    makeRoom(ctx, level, 1, RoomType::CubeButtons);
+    makeRoom(ctx, level, 2, RoomType::CubeButtons);
 
 #if 0
     // An alternative implementation could randomly select the type for each
