@@ -605,9 +605,20 @@ static CountT makeTestOTWPRoom(Engine &ctx,
 
     Entity otwp_a = makeOTWP(ctx, otwp_a_x, otwp_a_y, 1.5f);
 
-    room.entities[0] = otwp_a;
+    float otwp_b_x = randBetween(ctx,
+        1.5f,
+        consts::worldWidth / 4.f);
+    
+    float otwp_b_y = randBetween(ctx,
+        y_min + 2.f,
+        y_max - consts::wallWidth - 2.f);
+    
+    Entity otwp_b = makeOTWP(ctx, otwp_b_x, otwp_b_y, 1.5f);
 
-    return 1;
+    room.entities[0] = otwp_a;
+    room.entities[1] = otwp_b;
+
+    return 2;
 }
 
 // Make the doors and separator walls at the end of the room
