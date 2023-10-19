@@ -527,9 +527,9 @@ inline void lidarSystem(Engine &ctx,
 // Computes reward for each agent and keeps track of the max distance achieved
 // so far through the challenge. Continuous reward is provided for any new
 // distance achieved.
-inline void rewardSystem(Engine &ctx,
+inline void rewardSystem(Engine &,
                          Position pos,
-                         Apples &apples,
+                        //  Apples &apples,
                          Progress &progress,
                          Reward &out_reward)
 {
@@ -546,20 +546,20 @@ inline void rewardSystem(Engine &ctx,
     }
 
     // Reward for collecting an apple
-    int new_num_apples = 0;
-    for (CountT i = 0; i < consts::numApples; i++) {
-        Entity apple = apples.e[i];
-        AppleState apple_state = ctx.get<AppleState>(apple);
-        if (apple_state.isCollected) {
-            new_num_apples++;
-        }
-    }
-    int old_num_apples = progress.numApples;
-    float apple_progress = new_num_apples - old_num_apples;
-    if (apple_progress > 0) {
-        reward += apple_progress * consts::rewardPerApple;
-        progress.numApples = new_num_apples;
-    }
+    // int new_num_apples = 0;
+    // for (CountT i = 0; i < consts::numApples; i++) {
+    //     Entity apple = apples.e[i];
+    //     AppleState apple_state = ctx.get<AppleState>(apple);
+    //     if (apple_state.isCollected) {
+    //         new_num_apples++;
+    //     }
+    // }
+    // int old_num_apples = progress.numApples;
+    // float apple_progress = new_num_apples - old_num_apples;
+    // if (apple_progress > 0) {
+    //     reward += apple_progress * consts::rewardPerApple;
+    //     progress.numApples = new_num_apples;
+    // }
 
     if (reward == 0) {
         reward = consts::slackReward;
@@ -701,7 +701,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
     auto reward_sys = builder.addToGraph<ParallelForNode<Engine,
          rewardSystem,
             Position,
-            Apples,
+            // Apples,
             Progress,
             Reward
         >>({door_open_sys});

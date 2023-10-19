@@ -393,6 +393,7 @@ static Entity makeApple(Engine &ctx,
         1.f,
     };
     ctx.get<ObjectID>(apple) = ObjectID { (int32_t)SimObject::Apple };
+    ctx.get<AppleState>(apple).isCollected = false;
     ctx.get<EntityType>(apple) = EntityType::Apple;
 
     return apple;
