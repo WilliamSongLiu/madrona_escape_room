@@ -17,7 +17,7 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
-    WilliamManyButtons,
+    ManyButtons,
     NumTypes,
 };
 
@@ -560,13 +560,13 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
 }
 
 // Tons of buttons
-static CountT makeWilliamManyButtonsRoom(Engine &ctx,
+static CountT makeManyButtonsRoom(Engine &ctx,
                                   Room &room,
                                   float y_min,
                                   float y_max)
 {
     std::vector<Entity> buttons;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
         float button_x = randBetween(ctx,
             -consts::worldWidth / 2.f + consts::buttonWidth,
             consts::worldWidth / 2.f - consts::buttonWidth);
@@ -619,9 +619,9 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
-    case RoomType::WilliamManyButtons: {
+    case RoomType::ManyButtons: {
         num_room_entities =
-            makeWilliamManyButtonsRoom(ctx, room, room_y_min, room_y_max);
+            makeManyButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
     default: MADRONA_UNREACHABLE();
     }
@@ -638,9 +638,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::WilliamManyButtons);
-    makeRoom(ctx, level, 1, RoomType::WilliamManyButtons);
-    makeRoom(ctx, level, 2, RoomType::WilliamManyButtons);
+    makeRoom(ctx, level, 0, RoomType::SingleButton);
+    makeRoom(ctx, level, 1, RoomType::DoubleButton);
+    makeRoom(ctx, level, 2, RoomType::ManyButtons);
 
 #if 0
     // An alternative implementation could randomly select the type for each
