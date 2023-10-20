@@ -17,8 +17,8 @@ enum class RoomType : uint32_t {
     DoubleButton,
     CubeBlocking,
     CubeButtons,
-    TestOTWP,
-    TestOTNP,
+    TestOtwp,
+    TestOtnp,
     NumTypes,
 };
 
@@ -325,14 +325,12 @@ static void makeEndWall(Engine &ctx,
     room.door = door;
 }
 
-static Entity makeButton(Engine &ctx,
-                         float button_x,
-                         float button_y)
+static Entity makeButton(Engine &ctx, float x, float y)
 {
     Entity button = ctx.makeEntity<ButtonEntity>();
     ctx.get<Position>(button) = Vector3 {
-        button_x,
-        button_y,
+        x,
+        y,
         0.f,
     };
     ctx.get<Rotation>(button) = Quat { 1, 0, 0, 0 };
@@ -352,8 +350,8 @@ static Entity makeOtnp(Engine &ctx, float x, float y)
 {
     Entity otnp = ctx.makeEntity<OtnpEntity>();
     ctx.get<Position>(otnp) = Vector3 {
-        otnp_x,
-        otnp_y,
+        x,
+        y,
         0.f,
     };
     ctx.get<Rotation>(otnp) = Quat { 1, 0, 0, 0 };
@@ -524,17 +522,17 @@ static CountT makeCubeBlockingRoom(Engine &ctx,
     float cube_a_x = door_pos.x - 3.f;
     float cube_a_y = door_pos.y - 2.f;
 
-    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y, 1.5f);
+    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y);
 
     float cube_b_x = door_pos.x;
     float cube_b_y = door_pos.y - 2.f;
 
-    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y, 1.5f);
+    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y);
 
     float cube_c_x = door_pos.x + 3.f;
     float cube_c_y = door_pos.y - 2.f;
 
-    Entity cube_c = makeCube(ctx, cube_c_x, cube_c_y, 1.5f);
+    Entity cube_c = makeCube(ctx, cube_c_x, cube_c_y);
 
     room.entities[0] = button_a;
     room.entities[1] = button_b;
@@ -583,7 +581,7 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
 
-    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y, 1.5f);
+    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y);
 
     float cube_b_x = randBetween(ctx,
         1.5f,
@@ -593,7 +591,7 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
 
-    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y, 1.5f);
+    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y);
 
     room.entities[0] = button_a;
     room.entities[1] = button_b;
@@ -603,8 +601,7 @@ static CountT makeCubeButtonsRoom(Engine &ctx,
     return 4;
 }
 
-// Test OTWP
-static CountT makeTestOTWPRoom(Engine &ctx,
+static CountT makeTestOtwpRoom(Engine &ctx,
                                Room &room,
                                float y_min,
                                float y_max)
@@ -637,8 +634,7 @@ static CountT makeTestOTWPRoom(Engine &ctx,
     return 2;
 }
 
-// Test OTNP
-static CountT makeTestOTNPRoom(Engine &ctx,
+static CountT makeTestOtnpRoom(Engine &ctx,
                                Room &room,
                                float y_min,
                                float y_max)
@@ -653,7 +649,7 @@ static CountT makeTestOTNPRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
 
-    Entity otnp_a = makeOTNP(ctx, otnp_a_x, otnp_a_y);
+    Entity otnp_a = makeOtnp(ctx, otnp_a_x, otnp_a_y);
 
     float otnp_b_x = randBetween(ctx,
         1.5f,
@@ -663,7 +659,7 @@ static CountT makeTestOTNPRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
     
-    Entity otnp_b = makeOTNP(ctx, otnp_b_x, otnp_b_y);
+    Entity otnp_b = makeOtnp(ctx, otnp_b_x, otnp_b_y);
 
     room.entities[0] = otnp_a;
     room.entities[1] = otnp_b;
@@ -702,13 +698,13 @@ static void makeRoom(Engine &ctx,
         num_room_entities =
             makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
     } break;
-    case RoomType::TestOTWP: {
+    case RoomType::TestOtwp: {
         num_room_entities =
-            makeTestOTWPRoom(ctx, room, room_y_min, room_y_max);
+            makeTestOtwpRoom(ctx, room, room_y_min, room_y_max);
     } break;
-    case RoomType::TestOTNP: {
+    case RoomType::TestOtnp: {
         num_room_entities =
-            makeTestOTNPRoom(ctx, room, room_y_min, room_y_max);
+            makeTestOtnpRoom(ctx, room, room_y_min, room_y_max);
     } break;
     default: MADRONA_UNREACHABLE();
     }
@@ -725,9 +721,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::TestOTNP);
-    makeRoom(ctx, level, 1, RoomType::TestOTNP);
-    makeRoom(ctx, level, 2, RoomType::TestOTNP);
+    makeRoom(ctx, level, 0, RoomType::TestOtnp);
+    makeRoom(ctx, level, 1, RoomType::TestOtwp);
+    makeRoom(ctx, level, 2, RoomType::SingleButton);
 
 #if 0
     // An alternative implementation could randomly select the type for each
