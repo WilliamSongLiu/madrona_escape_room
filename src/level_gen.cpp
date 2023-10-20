@@ -13,12 +13,7 @@ inline constexpr float doorWidth = consts::worldWidth / 3.f;
 }
 
 enum class RoomType : uint32_t {
-    SingleButton,
-    DoubleButton,
-    CubeBlocking,
-    CubeButtons,
-    TestOTWP,
-    TestOTNP,
+    Game,
     NumTypes,
 };
 
@@ -325,14 +320,12 @@ static void makeEndWall(Engine &ctx,
     room.door = door;
 }
 
-static Entity makeButton(Engine &ctx,
-                         float button_x,
-                         float button_y)
+static Entity makeButton(Engine &ctx, float x, float y)
 {
     Entity button = ctx.makeEntity<ButtonEntity>();
     ctx.get<Position>(button) = Vector3 {
-        button_x,
-        button_y,
+        x,
+        y,
         0.f,
     };
     ctx.get<Rotation>(button) = Quat { 1, 0, 0, 0 };
@@ -348,14 +341,12 @@ static Entity makeButton(Engine &ctx,
     return button;
 }
 
-static Entity makeOTNP(Engine &ctx,
-                       float otnp_x,
-                       float otnp_y)
+static Entity makeOTNP(Engine &ctx, float x, float y)
 {
     Entity otnp = ctx.makeEntity<OTNPEntity>();
     ctx.get<Position>(otnp) = Vector3 {
-        otnp_x,
-        otnp_y,
+        x,
+        y,
         0.f,
     };
     ctx.get<Rotation>(otnp) = Quat { 1, 0, 0, 0 };
@@ -371,18 +362,15 @@ static Entity makeOTNP(Engine &ctx,
     return otnp;
 }
 
-static Entity makeCube(Engine &ctx,
-                       float cube_x,
-                       float cube_y,
-                       float scale = 1.f)
+static Entity makeCube(Engine &ctx, float x, float y, float scale = 1.f)
 {
     Entity cube = ctx.makeEntity<PhysicsEntity>();
     setupRigidBodyEntity(
         ctx,
         cube,
         Vector3 {
-            cube_x,
-            cube_y,
+            x,
+            y,
             1.f * scale,
         },
         Quat { 1, 0, 0, 0 },
@@ -399,18 +387,15 @@ static Entity makeCube(Engine &ctx,
     return cube;
 }
 
-static Entity makeOTWP(Engine &ctx,
-                       float otwp_x,
-                       float otwp_y,
-                       float scale = 1.f)
+static Entity makeOTWP(Engine &ctx, float x, float y, float scale = 1.f)
 {
     Entity otwp = ctx.makeEntity<PhysicsEntity>();
     setupRigidBodyEntity(
         ctx,
         otwp,
         Vector3 {
-            otwp_x,
-            otwp_y,
+            x,
+            y,
             1.f * scale,
         },
         Quat { 1, 0, 0, 0 },
@@ -441,178 +426,7 @@ static void setupDoor(Engine &ctx,
     props.isPersistent = is_persistent;
 }
 
-// A room with a single button that needs to be pressed, the door stays open.
-static CountT makeSingleButtonRoom(Engine &ctx,
-                                   Room &room,
-                                   float y_min,
-                                   float y_max)
-{
-    float button_x = randInRangeCentered(ctx,
-        consts::worldWidth / 2.f - consts::buttonWidth);
-    float button_y = randBetween(ctx, y_min + consts::roomLength / 4.f,
-        y_max - consts::wallWidth - consts::buttonWidth / 2.f);
-
-    Entity button = makeButton(ctx, button_x, button_y);
-
-    setupDoor(ctx, room.door, { button }, true);
-
-    room.entities[0] = button;
-
-    return 1;
-}
-
-// A room with two buttons that need to be pressed simultaneously,
-// the door stays open.
-static CountT makeDoubleButtonRoom(Engine &ctx,
-                                   Room &room,
-                                   float y_min,
-                                   float y_max)
-{
-    float a_x = randBetween(ctx,
-        -consts::worldWidth / 2.f + consts::buttonWidth,
-        -consts::buttonWidth);
-
-    float a_y = randBetween(ctx,
-        y_min + consts::roomLength / 4.f,
-        y_max - consts::wallWidth - consts::buttonWidth / 2.f);
-
-    Entity a = makeButton(ctx, a_x, a_y);
-
-    float b_x = randBetween(ctx,
-        consts::buttonWidth,
-        consts::worldWidth / 2.f - consts::buttonWidth);
-
-    float b_y = randBetween(ctx,
-        y_min + consts::roomLength / 4.f,
-        y_max - consts::wallWidth - consts::buttonWidth / 2.f);
-
-    Entity b = makeButton(ctx, b_x, b_y);
-
-    setupDoor(ctx, room.door, { a, b }, true);
-
-    room.entities[0] = a;
-    room.entities[1] = b;
-
-    return 2;
-}
-
-// This room has 3 cubes blocking the exit door as well as two buttons.
-// The agents either need to pull the middle cube out of the way and
-// open the door or open the door with the buttons and push the cubes
-// into the next room.
-static CountT makeCubeBlockingRoom(Engine &ctx,
-                                   Room &room,
-                                   float y_min,
-                                   float y_max)
-{
-    float button_a_x = randBetween(ctx,
-        -consts::worldWidth / 2.f + consts::buttonWidth,
-        -consts::buttonWidth - consts::worldWidth / 4.f);
-
-    float button_a_y = randBetween(ctx,
-        y_min + consts::buttonWidth,
-        y_max - consts::roomLength / 4.f);
-
-    Entity button_a = makeButton(ctx, button_a_x, button_a_y);
-
-    float button_b_x = randBetween(ctx,
-        consts::buttonWidth + consts::worldWidth / 4.f,
-        consts::worldWidth / 2.f - consts::buttonWidth);
-
-    float button_b_y = randBetween(ctx,
-        y_min + consts::buttonWidth,
-        y_max - consts::roomLength / 4.f);
-
-    Entity button_b = makeButton(ctx, button_b_x, button_b_y);
-
-    setupDoor(ctx, room.door, { button_a, button_b }, true);
-
-    Vector3 door_pos = ctx.get<Position>(room.door);
-
-    float cube_a_x = door_pos.x - 3.f;
-    float cube_a_y = door_pos.y - 2.f;
-
-    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y, 1.5f);
-
-    float cube_b_x = door_pos.x;
-    float cube_b_y = door_pos.y - 2.f;
-
-    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y, 1.5f);
-
-    float cube_c_x = door_pos.x + 3.f;
-    float cube_c_y = door_pos.y - 2.f;
-
-    Entity cube_c = makeCube(ctx, cube_c_x, cube_c_y, 1.5f);
-
-    room.entities[0] = button_a;
-    room.entities[1] = button_b;
-    room.entities[2] = cube_a;
-    room.entities[3] = cube_b;
-    room.entities[4] = cube_c;
-
-    return 5;
-}
-
-// This room has 2 buttons and 2 cubes. The buttons need to remain pressed
-// for the door to stay open. To progress, the agents must push at least one
-// cube onto one of the buttons, or more optimally, both.
-static CountT makeCubeButtonsRoom(Engine &ctx,
-                                  Room &room,
-                                  float y_min,
-                                  float y_max)
-{
-    float button_a_x = randBetween(ctx,
-        -consts::worldWidth / 2.f + consts::buttonWidth,
-        -consts::buttonWidth - consts::worldWidth / 4.f);
-
-    float button_a_y = randBetween(ctx,
-        y_min + consts::buttonWidth,
-        y_max - consts::roomLength / 4.f);
-
-    Entity button_a = makeButton(ctx, button_a_x, button_a_y);
-
-    float button_b_x = randBetween(ctx,
-        consts::buttonWidth + consts::worldWidth / 4.f,
-        consts::worldWidth / 2.f - consts::buttonWidth);
-
-    float button_b_y = randBetween(ctx,
-        y_min + consts::buttonWidth,
-        y_max - consts::roomLength / 4.f);
-
-    Entity button_b = makeButton(ctx, button_b_x, button_b_y);
-
-    setupDoor(ctx, room.door, { button_a, button_b }, false);
-
-    float cube_a_x = randBetween(ctx,
-        -consts::worldWidth / 4.f,
-        -1.5f);
-
-    float cube_a_y = randBetween(ctx,
-        y_min + 2.f,
-        y_max - consts::wallWidth - 2.f);
-
-    Entity cube_a = makeCube(ctx, cube_a_x, cube_a_y, 1.5f);
-
-    float cube_b_x = randBetween(ctx,
-        1.5f,
-        consts::worldWidth / 4.f);
-
-    float cube_b_y = randBetween(ctx,
-        y_min + 2.f,
-        y_max - consts::wallWidth - 2.f);
-
-    Entity cube_b = makeCube(ctx, cube_b_x, cube_b_y, 1.5f);
-
-    room.entities[0] = button_a;
-    room.entities[1] = button_b;
-    room.entities[2] = cube_a;
-    room.entities[3] = cube_b;
-
-    return 4;
-}
-
-// Test OTWP
-static CountT makeTestOTWPRoom(Engine &ctx,
+static CountT makeGameRoom(Engine &ctx,
                                Room &room,
                                float y_min,
                                float y_max)
@@ -645,40 +459,6 @@ static CountT makeTestOTWPRoom(Engine &ctx,
     return 2;
 }
 
-// Test OTNP
-static CountT makeTestOTNPRoom(Engine &ctx,
-                               Room &room,
-                               float y_min,
-                               float y_max)
-{
-    setupDoor(ctx, room.door, {}, false);
-
-    float otnp_a_x = randBetween(ctx,
-        -consts::worldWidth / 4.f,
-        -1.5f);
-
-    float otnp_a_y = randBetween(ctx,
-        y_min + 2.f,
-        y_max - consts::wallWidth - 2.f);
-
-    Entity otnp_a = makeOTNP(ctx, otnp_a_x, otnp_a_y);
-
-    float otnp_b_x = randBetween(ctx,
-        1.5f,
-        consts::worldWidth / 4.f);
-    
-    float otnp_b_y = randBetween(ctx,
-        y_min + 2.f,
-        y_max - consts::wallWidth - 2.f);
-    
-    Entity otnp_b = makeOTNP(ctx, otnp_b_x, otnp_b_y);
-
-    room.entities[0] = otnp_a;
-    room.entities[1] = otnp_b;
-
-    return 2;
-}
-
 // Make the doors and separator walls at the end of the room
 // before delegating to specific code based on room_type.
 static void makeRoom(Engine &ctx,
@@ -694,29 +474,9 @@ static void makeRoom(Engine &ctx,
 
     CountT num_room_entities;
     switch (room_type) {
-    case RoomType::SingleButton: {
+    case RoomType::Game: {
         num_room_entities =
-            makeSingleButtonRoom(ctx, room, room_y_min, room_y_max);
-    } break;
-    case RoomType::DoubleButton: {
-        num_room_entities =
-            makeDoubleButtonRoom(ctx, room, room_y_min, room_y_max);
-    } break;
-    case RoomType::CubeBlocking: {
-        num_room_entities =
-            makeCubeBlockingRoom(ctx, room, room_y_min, room_y_max);
-    } break;
-    case RoomType::CubeButtons: {
-        num_room_entities =
-            makeCubeButtonsRoom(ctx, room, room_y_min, room_y_max);
-    } break;
-    case RoomType::TestOTWP: {
-        num_room_entities =
-            makeTestOTWPRoom(ctx, room, room_y_min, room_y_max);
-    } break;
-    case RoomType::TestOTNP: {
-        num_room_entities =
-            makeTestOTNPRoom(ctx, room, room_y_min, room_y_max);
+            makeGameRoom(ctx, room, room_y_min, room_y_max);
     } break;
     default: MADRONA_UNREACHABLE();
     }
@@ -733,9 +493,9 @@ static void generateLevel(Engine &ctx)
     LevelState &level = ctx.singleton<LevelState>();
 
     // For training simplicity, define a fixed sequence of levels.
-    makeRoom(ctx, level, 0, RoomType::TestOTNP);
-    makeRoom(ctx, level, 1, RoomType::TestOTNP);
-    makeRoom(ctx, level, 2, RoomType::TestOTNP);
+    makeRoom(ctx, level, 0, RoomType::Game);
+    makeRoom(ctx, level, 1, RoomType::Game);
+    makeRoom(ctx, level, 2, RoomType::Game);
 
 #if 0
     // An alternative implementation could randomly select the type for each
