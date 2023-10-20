@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     render_asset_paths[(size_t)SimObject::Button] =
         (std::filesystem::path(DATA_DIR) / "cube_render.obj").string();
     render_asset_paths[(size_t)SimObject::Lava] =
-        (std::filesystem::path(DATA_DIR) / "cube_with_hat_render.obj").string();
+        (std::filesystem::path(DATA_DIR) / "cube_render.obj").string();
     render_asset_paths[(size_t)SimObject::Plane] =
         (std::filesystem::path(DATA_DIR) / "plane.obj").string();
 
@@ -140,13 +140,12 @@ int main(int argc, char *argv[])
     render_assets->objects[(CountT)SimObject::Otwp].meshes[0].materialIDX = 0;
     render_assets->objects[(CountT)SimObject::Otwp].meshes[1].materialIDX = 1;
     render_assets->objects[(CountT)SimObject::Wall].meshes[0].materialIDX = 1;
-    render_assets->objects[(CountT)SimObject::Door].meshes[0].materialIDX = 5;
+    render_assets->objects[(CountT)SimObject::Door].meshes[0].materialIDX = 1;
     render_assets->objects[(CountT)SimObject::Agent].meshes[0].materialIDX = 2;
     render_assets->objects[(CountT)SimObject::Agent].meshes[1].materialIDX = 3;
     render_assets->objects[(CountT)SimObject::Agent].meshes[2].materialIDX = 3;
     render_assets->objects[(CountT)SimObject::Button].meshes[0].materialIDX = 6;
-    render_assets->objects[(CountT)SimObject::Lava].meshes[0].materialIDX = 6;
-    render_assets->objects[(CountT)SimObject::Lava].meshes[1].materialIDX = 1;
+    render_assets->objects[(CountT)SimObject::Lava].meshes[0].materialIDX = 5;
     render_assets->objects[(CountT)SimObject::Plane].meshes[0].materialIDX = 4;
 
     viewer.loadObjects(render_assets->objects, materials, {

@@ -433,28 +433,28 @@ static CountT makeGameRoom(Engine &ctx,
 {
     setupDoor(ctx, room.door, {}, false);
 
-    float otwp_a_x = randBetween(ctx,
+    float lava_a_x = randBetween(ctx,
         -consts::worldWidth / 4.f,
         -1.5f);
 
-    float otwp_a_y = randBetween(ctx,
+    float lava_a_y = randBetween(ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
 
-    Entity otwp_a = makeOtwp(ctx, otwp_a_x, otwp_a_y);
+    Entity lava_a = makeLava(ctx, lava_a_x, lava_a_y);
 
-    float otwp_b_x = randBetween(ctx,
+    float lava_b_x = randBetween(ctx,
         1.5f,
         consts::worldWidth / 4.f);
     
-    float otwp_b_y = randBetween(ctx,
+    float lava_b_y = randBetween(ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
     
-    Entity otwp_b = makeOtwp(ctx, otwp_b_x, otwp_b_y);
+    Entity lava_b = makeLava(ctx, lava_b_x, lava_b_y);
 
-    room.entities[0] = otwp_a;
-    room.entities[1] = otwp_b;
+    room.entities[0] = lava_a;
+    room.entities[1] = lava_b;
 
     return 2;
 }
