@@ -362,7 +362,7 @@ static Entity makeOtnp(Engine &ctx, float x, float y)
     return otnp;
 }
 
-static Entity makeCube(Engine &ctx, float x, float y, float scale = 1.f)
+static Entity makeCube(Engine &ctx, float x, float y)
 {
     Entity cube = ctx.makeEntity<PhysicsEntity>();
     setupRigidBodyEntity(
@@ -371,23 +371,23 @@ static Entity makeCube(Engine &ctx, float x, float y, float scale = 1.f)
         Vector3 {
             x,
             y,
-            1.f * scale,
+            1.f * consts::cubeWidth,
         },
         Quat { 1, 0, 0, 0 },
         SimObject::Cube,
         EntityType::Cube,
         ResponseType::Dynamic,
         Diag3x3 {
-            scale,
-            scale,
-            scale,
+            consts::cubeWidth,
+            consts::cubeWidth,
+            consts::cubeWidth,
         });
     registerRigidBodyEntity(ctx, cube, SimObject::Cube);
 
     return cube;
 }
 
-static Entity makeOtwp(Engine &ctx, float x, float y, float scale = 1.f)
+static Entity makeOtwp(Engine &ctx, float x, float y)
 {
     Entity otwp = ctx.makeEntity<PhysicsEntity>();
     setupRigidBodyEntity(
@@ -396,16 +396,16 @@ static Entity makeOtwp(Engine &ctx, float x, float y, float scale = 1.f)
         Vector3 {
             x,
             y,
-            1.f * scale,
+            1.f * consts::otwpWidth,
         },
         Quat { 1, 0, 0, 0 },
         SimObject::Otwp,
         EntityType::Otwp,
         ResponseType::Dynamic,
         Diag3x3 {
-            scale,
-            scale,
-            scale,
+            consts::otwpWidth,
+            consts::otwpWidth,
+            consts::otwpWidth,
         });
     registerRigidBodyEntity(ctx, otwp, SimObject::Otwp);
 
@@ -441,7 +441,7 @@ static CountT makeGameRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
 
-    Entity otwp_a = makeOtwp(ctx, otwp_a_x, otwp_a_y, 1.5f);
+    Entity otwp_a = makeOtwp(ctx, otwp_a_x, otwp_a_y);
 
     float otwp_b_x = randBetween(ctx,
         1.5f,
@@ -451,7 +451,7 @@ static CountT makeGameRoom(Engine &ctx,
         y_min + 2.f,
         y_max - consts::wallWidth - 2.f);
     
-    Entity otwp_b = makeOtwp(ctx, otwp_b_x, otwp_b_y, 1.5f);
+    Entity otwp_b = makeOtwp(ctx, otwp_b_x, otwp_b_y);
 
     room.entities[0] = otwp_a;
     room.entities[1] = otwp_b;
