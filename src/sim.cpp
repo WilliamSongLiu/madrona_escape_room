@@ -520,9 +520,6 @@ inline void lidarSystem(Engine &ctx,
 #endif
 }
 
-// Computes reward for each agent and keeps track of the max distance achieved
-// so far through the challenge. Continuous reward is provided for any new
-// distance achieved.
 inline void rewardSystem(Engine &,
                          Position pos,
                          Progress &progress,
@@ -530,9 +527,7 @@ inline void rewardSystem(Engine &,
 {
     // Just in case agents do something crazy, clamp total reward
     float reward_pos = fminf(pos.y, consts::worldLength * 2);
-
     float old_max_y = progress.maxY;
-
     float new_progress = reward_pos - old_max_y;
 
     float reward;
@@ -546,7 +541,6 @@ inline void rewardSystem(Engine &,
     out_reward.v = reward;
 }
 
-// Removed
 inline void bonusRewardSystem(Engine &ctx,
                               OtherAgents &others,
                               Progress &progress,
@@ -646,7 +640,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
             ButtonState
         >>({phys_done});
     
-    // Check Lavas
+    // Check lavas
     auto lava_sys = builder.addToGraph<ParallelForNode<Engine,
         lavaSystem,
             Position,
