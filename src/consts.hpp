@@ -33,7 +33,7 @@ inline constexpr float rewardPerDist = 0.05f;
 // penalty reward
 inline constexpr float slackReward = -0.005f;
 // Each step that the agents are in lava they get a large penalty reward
-inline constexpr float lavaReward = -0.03f;
+inline constexpr float lavaReward = -0.01f;
 
 // Steps per episode
 inline constexpr int32_t episodeLen = 200;
