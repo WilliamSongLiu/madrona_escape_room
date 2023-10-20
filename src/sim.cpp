@@ -520,7 +520,7 @@ inline void lidarSystem(Engine &ctx,
 #endif
 }
 
-inline void rewardSystem(Engine &,
+inline void rewardSystem(Engine &ctx,
                          Position pos,
                          Progress &progress,
                          Reward &out_reward)
@@ -536,6 +536,23 @@ inline void rewardSystem(Engine &,
         progress.maxY = reward_pos;
     } else {
         reward = consts::slackReward;
+    }
+
+    // Lava penalty
+    const LevelState &level = ctx.singleton<LevelState>();
+    for (CountT i = 0; i < consts::numRooms; i++) {
+        const Room &room = level.rooms[i];
+        for (CountT j = 0; j < consts::maxEntitiesPerRoom; j++) {
+            Entity entity = room.entities[j];
+            if (entity != Entity::none()) {
+                EntityType entity_type = ctx.get<EntityType>(entity);
+                if (entity_type == EntityType::Lava) {
+                    if (ctx.get<LavaState>(entity).isPressed) {
+                        reward += consts::lavaReward;
+                    }
+                }
+            }
+        }
     }
 
     out_reward.v = reward;

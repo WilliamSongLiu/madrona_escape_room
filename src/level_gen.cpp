@@ -494,6 +494,8 @@ static void generateLevel(Engine &ctx)
 
     // For training simplicity, define a fixed sequence of levels.
     makeRoom(ctx, level, 0, RoomType::Game);
+    makeRoom(ctx, level, 1, RoomType::Game);
+    makeRoom(ctx, level, 2, RoomType::Game);
 
 #if 0
     // An alternative implementation could randomly select the type for each
