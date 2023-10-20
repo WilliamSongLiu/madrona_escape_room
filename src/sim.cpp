@@ -656,7 +656,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
 
     // Compute initial reward now that physics has updated the world state
     auto reward_sys = builder.addToGraph<ParallelForNode<Engine,
-         rewardSystem,
+        rewardSystem,
             Position,
             Progress,
             Reward
@@ -664,7 +664,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
 
     // Assign partner's reward
     auto bonus_reward_sys = builder.addToGraph<ParallelForNode<Engine,
-         bonusRewardSystem,
+        bonusRewardSystem,
             OtherAgents,
             Progress,
             Reward
