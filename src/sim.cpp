@@ -28,7 +28,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerComponent<RoomEntityObservations>();
     registry.registerComponent<DoorObservation>();
     registry.registerComponent<ButtonState>();
-    registry.registerComponent<OTNPState>();
+    registry.registerComponent<OtnpState>();
     registry.registerComponent<OpenState>();
     registry.registerComponent<DoorProperties>();
     registry.registerComponent<Lidar>();
@@ -42,7 +42,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerArchetype<PhysicsEntity>();
     registry.registerArchetype<DoorEntity>();
     registry.registerArchetype<ButtonEntity>();
-    registry.registerArchetype<OTNPEntity>();
+    registry.registerArchetype<OtnpEntity>();
 
     registry.exportSingleton<WorldReset>(
         (uint32_t)ExportID::Reset);
@@ -285,7 +285,7 @@ inline void buttonSystem(Engine &ctx,
 
 inline void otnpSystem(Engine &ctx,
                          Position pos,
-                         OTNPState &state)
+                         OtnpState &state)
 {
     AABB otnp_aabb {
         .pMin = pos + Vector3 { 
@@ -646,11 +646,11 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
             ButtonState
         >>({phys_done});
     
-    // Check OTNPs
+    // Check Otnps
     auto otnp_sys = builder.addToGraph<ParallelForNode<Engine,
         otnpSystem,
             Position,
-            OTNPState
+            OtnpState
         >>({button_sys});
 
     // Set door to start opening if button conditions are met
@@ -748,7 +748,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
         builder, {sort_agents});
     auto sort_buttons = queueSortByWorld<ButtonEntity>(
         builder, {sort_phys_objects});
-    auto sort_otnps = queueSortByWorld<OTNPEntity>(
+    auto sort_otnps = queueSortByWorld<OtnpEntity>(
         builder, {sort_buttons});
     auto sort_walls = queueSortByWorld<DoorEntity>(
         builder, {sort_otnps});

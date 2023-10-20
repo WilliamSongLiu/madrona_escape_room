@@ -133,7 +133,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
     std::array<std::string, (size_t)SimObject::NumObjects - 1> asset_paths;
     asset_paths[(size_t)SimObject::Cube] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
-    asset_paths[(size_t)SimObject::OTWP] =
+    asset_paths[(size_t)SimObject::Otwp] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
     asset_paths[(size_t)SimObject::Wall] =
         (std::filesystem::path(DATA_DIR) / "wall_collision.obj").string();
@@ -143,7 +143,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
         (std::filesystem::path(DATA_DIR) / "agent_collision_simplified.obj").string();
     asset_paths[(size_t)SimObject::Button] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
-    asset_paths[(size_t)SimObject::OTNP] =
+    asset_paths[(size_t)SimObject::Otnp] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
 
     std::array<const char *, (size_t)SimObject::NumObjects - 1> asset_cstrs;
@@ -196,7 +196,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
         .muD = 0.75f,
     });
 
-    setupHull(SimObject::OTWP, 0.075f, {
+    setupHull(SimObject::Otwp, 0.075f, {
         .muS = 0.5f,
         .muD = 0.75f,
     });
@@ -221,7 +221,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
         .muD = 0.5f,
     });
 
-    setupHull(SimObject::OTNP, 1.f, {
+    setupHull(SimObject::Otnp, 1.f, {
         .muS = 0.5f,
         .muD = 0.5f,
     });
