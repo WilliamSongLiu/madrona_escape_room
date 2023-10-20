@@ -148,7 +148,7 @@ struct GrabState {
 enum class EntityType : uint32_t {
     None,
     Button,
-    Otnp,
+    Lava,
     Cube,
     Otwp,
     Wall,
@@ -175,7 +175,7 @@ struct ButtonState {
     bool isPressed;
 };
 
-struct OtnpState {
+struct LavaState {
     bool isPressed;
 };
 
@@ -274,12 +274,12 @@ struct ButtonEntity : public madrona::Archetype<
     EntityType
 > {};
 
-struct OtnpEntity : public madrona::Archetype<
+struct LavaEntity : public madrona::Archetype<
     Position,
     Rotation,
     Scale,
     ObjectID,
-    OtnpState,
+    LavaState,
     EntityType
 > {};
 

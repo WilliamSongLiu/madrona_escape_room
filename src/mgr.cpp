@@ -143,7 +143,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
         (std::filesystem::path(DATA_DIR) / "agent_collision_simplified.obj").string();
     asset_paths[(size_t)SimObject::Button] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
-    asset_paths[(size_t)SimObject::Otnp] =
+    asset_paths[(size_t)SimObject::Lava] =
         (std::filesystem::path(DATA_DIR) / "cube_collision.obj").string();
 
     std::array<const char *, (size_t)SimObject::NumObjects - 1> asset_cstrs;
@@ -221,7 +221,7 @@ static void loadPhysicsObjects(PhysicsLoader &loader)
         .muD = 0.5f,
     });
 
-    setupHull(SimObject::Otnp, 1.f, {
+    setupHull(SimObject::Lava, 1.f, {
         .muS = 0.5f,
         .muD = 0.5f,
     });

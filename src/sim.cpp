@@ -28,7 +28,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerComponent<RoomEntityObservations>();
     registry.registerComponent<DoorObservation>();
     registry.registerComponent<ButtonState>();
-    registry.registerComponent<OtnpState>();
+    registry.registerComponent<LavaState>();
     registry.registerComponent<OpenState>();
     registry.registerComponent<DoorProperties>();
     registry.registerComponent<Lidar>();
@@ -42,7 +42,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerArchetype<PhysicsEntity>();
     registry.registerArchetype<DoorEntity>();
     registry.registerArchetype<ButtonEntity>();
-    registry.registerArchetype<OtnpEntity>();
+    registry.registerArchetype<LavaEntity>();
 
     registry.exportSingleton<WorldReset>(
         (uint32_t)ExportID::Reset);
@@ -283,30 +283,30 @@ inline void buttonSystem(Engine &ctx,
     state.isPressed = button_pressed;
 }
 
-inline void otnpSystem(Engine &ctx,
+inline void lavaSystem(Engine &ctx,
                          Position pos,
-                         OtnpState &state)
+                         LavaState &state)
 {
-    AABB otnp_aabb {
+    AABB lava_aabb {
         .pMin = pos + Vector3 { 
-            -consts::otnpWidth / 2.f, 
-            -consts::otnpWidth / 2.f,
+            -consts::lavaWidth / 2.f, 
+            -consts::lavaWidth / 2.f,
             0.f,
         },
         .pMax = pos + Vector3 { 
-            consts::otnpWidth / 2.f, 
-            consts::otnpWidth / 2.f,
+            consts::lavaWidth / 2.f, 
+            consts::lavaWidth / 2.f,
             0.25f
         },
     };
 
-    bool otnp_pressed = false;
+    bool lava_pressed = false;
     RigidBodyPhysicsSystem::findEntitiesWithinAABB(
-            ctx, otnp_aabb, [&](Entity) {
-        otnp_pressed = true;
+            ctx, lava_aabb, [&](Entity) {
+        lava_pressed = true;
     });
 
-    state.isPressed = otnp_pressed;
+    state.isPressed = lava_pressed;
 }
 
 // Check if all the buttons linked to the door are pressed and open if so.
@@ -646,11 +646,11 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
             ButtonState
         >>({phys_done});
     
-    // Check Otnps
-    auto otnp_sys = builder.addToGraph<ParallelForNode<Engine,
-        otnpSystem,
+    // Check Lavas
+    auto lava_sys = builder.addToGraph<ParallelForNode<Engine,
+        lavaSystem,
             Position,
-            OtnpState
+            LavaState
         >>({button_sys});
 
     // Set door to start opening if button conditions are met
@@ -658,7 +658,7 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
         doorOpenSystem,
             OpenState,
             DoorProperties
-        >>({otnp_sys});
+        >>({lava_sys});
 
     // Compute initial reward now that physics has updated the world state
     auto reward_sys = builder.addToGraph<ParallelForNode<Engine,
@@ -748,10 +748,10 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
         builder, {sort_agents});
     auto sort_buttons = queueSortByWorld<ButtonEntity>(
         builder, {sort_phys_objects});
-    auto sort_otnps = queueSortByWorld<OtnpEntity>(
+    auto sort_lavas = queueSortByWorld<LavaEntity>(
         builder, {sort_buttons});
     auto sort_walls = queueSortByWorld<DoorEntity>(
-        builder, {sort_otnps});
+        builder, {sort_lavas});
     auto sort_constraints = queueSortByWorld<ConstraintData>(
         builder, {sort_walls});
     (void)sort_walls;

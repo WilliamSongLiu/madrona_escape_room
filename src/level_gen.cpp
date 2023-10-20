@@ -341,25 +341,25 @@ static Entity makeButton(Engine &ctx, float x, float y)
     return button;
 }
 
-static Entity makeOtnp(Engine &ctx, float x, float y)
+static Entity makeLava(Engine &ctx, float x, float y)
 {
-    Entity otnp = ctx.makeEntity<OtnpEntity>();
-    ctx.get<Position>(otnp) = Vector3 {
+    Entity lava = ctx.makeEntity<LavaEntity>();
+    ctx.get<Position>(lava) = Vector3 {
         x,
         y,
         0.f,
     };
-    ctx.get<Rotation>(otnp) = Quat { 1, 0, 0, 0 };
-    ctx.get<Scale>(otnp) = Diag3x3 {
-        consts::otnpWidth,
-        consts::otnpWidth,
+    ctx.get<Rotation>(lava) = Quat { 1, 0, 0, 0 };
+    ctx.get<Scale>(lava) = Diag3x3 {
+        consts::lavaWidth,
+        consts::lavaWidth,
         0.2f,
     };
-    ctx.get<ObjectID>(otnp) = ObjectID { (int32_t)SimObject::Otnp };
-    ctx.get<OtnpState>(otnp).isPressed = false;
-    ctx.get<EntityType>(otnp) = EntityType::Otnp;
+    ctx.get<ObjectID>(lava) = ObjectID { (int32_t)SimObject::Lava };
+    ctx.get<LavaState>(lava).isPressed = false;
+    ctx.get<EntityType>(lava) = EntityType::Lava;
 
-    return otnp;
+    return lava;
 }
 
 static Entity makeCube(Engine &ctx, float x, float y)
