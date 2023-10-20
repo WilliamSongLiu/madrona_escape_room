@@ -28,6 +28,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerComponent<RoomEntityObservations>();
     registry.registerComponent<DoorObservation>();
     registry.registerComponent<ButtonState>();
+    registry.registerComponent<OTNPState>();
     registry.registerComponent<OpenState>();
     registry.registerComponent<DoorProperties>();
     registry.registerComponent<Lidar>();
@@ -41,6 +42,7 @@ void Sim::registerTypes(ECSRegistry &registry, const Config &)
     registry.registerArchetype<PhysicsEntity>();
     registry.registerArchetype<DoorEntity>();
     registry.registerArchetype<ButtonEntity>();
+    registry.registerArchetype<OTNPEntity>();
 
     registry.exportSingleton<WorldReset>(
         (uint32_t)ExportID::Reset);
@@ -279,6 +281,32 @@ inline void buttonSystem(Engine &ctx,
     });
 
     state.isPressed = button_pressed;
+}
+
+inline void otnpSystem(Engine &ctx,
+                         Position pos,
+                         OTNPState &state)
+{
+    AABB otnp_aabb {
+        .pMin = pos + Vector3 { 
+            -consts::otnpWidth / 2.f, 
+            -consts::otnpWidth / 2.f,
+            0.f,
+        },
+        .pMax = pos + Vector3 { 
+            consts::otnpWidth / 2.f, 
+            consts::otnpWidth / 2.f,
+            0.25f
+        },
+    };
+
+    bool otnp_pressed = false;
+    RigidBodyPhysicsSystem::findEntitiesWithinAABB(
+            ctx, otnp_aabb, [&](Entity) {
+        otnp_pressed = true;
+    });
+
+    state.isPressed = otnp_pressed;
 }
 
 // Check if all the buttons linked to the door are pressed and open if so.
@@ -617,13 +645,20 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
             Position,
             ButtonState
         >>({phys_done});
+    
+    // Check OTNPs
+    auto otnp_sys = builder.addToGraph<ParallelForNode<Engine,
+        otnpSystem,
+            Position,
+            OTNPState
+        >>({button_sys});
 
     // Set door to start opening if button conditions are met
     auto door_open_sys = builder.addToGraph<ParallelForNode<Engine,
         doorOpenSystem,
             OpenState,
             DoorProperties
-        >>({button_sys});
+        >>({otnp_sys});
 
     // Compute initial reward now that physics has updated the world state
     auto reward_sys = builder.addToGraph<ParallelForNode<Engine,
@@ -713,8 +748,10 @@ void Sim::setupTasks(TaskGraphBuilder &builder, const Config &cfg)
         builder, {sort_agents});
     auto sort_buttons = queueSortByWorld<ButtonEntity>(
         builder, {sort_phys_objects});
-    auto sort_walls = queueSortByWorld<DoorEntity>(
+    auto sort_otnps = queueSortByWorld<OTNPEntity>(
         builder, {sort_buttons});
+    auto sort_walls = queueSortByWorld<DoorEntity>(
+        builder, {sort_otnps});
     auto sort_constraints = queueSortByWorld<ConstraintData>(
         builder, {sort_walls});
     (void)sort_walls;

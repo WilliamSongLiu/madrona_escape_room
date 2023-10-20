@@ -21,6 +21,7 @@ inline constexpr float worldLength = 40.f;
 inline constexpr float worldWidth = 20.f;
 inline constexpr float wallWidth = 1.f;
 inline constexpr float buttonWidth = 1.3f;
+inline constexpr float otnpWidth = 1.3f;
 inline constexpr float agentRadius = 1.f;
 inline constexpr float roomLength = worldLength / numRooms;
 

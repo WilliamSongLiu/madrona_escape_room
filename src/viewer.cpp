@@ -89,6 +89,8 @@ int main(int argc, char *argv[])
         (std::filesystem::path(DATA_DIR) / "agent_render.obj").string();
     render_asset_paths[(size_t)SimObject::Button] =
         (std::filesystem::path(DATA_DIR) / "cube_render.obj").string();
+    render_asset_paths[(size_t)SimObject::OTNP] =
+        (std::filesystem::path(DATA_DIR) / "cube_with_hat_render.obj").string();
     render_asset_paths[(size_t)SimObject::Plane] =
         (std::filesystem::path(DATA_DIR) / "plane.obj").string();
 
@@ -143,6 +145,8 @@ int main(int argc, char *argv[])
     render_assets->objects[(CountT)SimObject::Agent].meshes[1].materialIDX = 3;
     render_assets->objects[(CountT)SimObject::Agent].meshes[2].materialIDX = 3;
     render_assets->objects[(CountT)SimObject::Button].meshes[0].materialIDX = 6;
+    render_assets->objects[(CountT)SimObject::OTNP].meshes[0].materialIDX = 6;
+    render_assets->objects[(CountT)SimObject::OTNP].meshes[1].materialIDX = 1;
     render_assets->objects[(CountT)SimObject::Plane].meshes[0].materialIDX = 4;
 
     viewer.loadObjects(render_assets->objects, materials, {
